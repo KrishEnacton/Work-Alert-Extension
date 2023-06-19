@@ -30,7 +30,7 @@ export default defineManifest({
   ],
   web_accessible_resources: [
     {
-      resources: ['src/styles/output.css'],
+      resources: ['src/styles/output.css', 'img/enacton.png'],
       matches: ['https://www.upwork.com/*'],
       use_dynamic_url: true,
     },
