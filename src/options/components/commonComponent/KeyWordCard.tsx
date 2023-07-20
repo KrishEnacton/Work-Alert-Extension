@@ -43,6 +43,8 @@ const KeyWordCards = () => {
     })
   }, [])
 
+  useEffect(() => {}, [keys])
+
   return (
     <div className="container py-2 mt-2 rounded-xl w-full space-y-4 flex-col">
       <div className="flex flex-wrap items-center justify-center gap-[1.8rem] overflow-y-auto">
