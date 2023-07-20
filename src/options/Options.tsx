@@ -6,6 +6,7 @@ import RouteSection from './components/sections/RouteSection'
 import { useRecoilState } from 'recoil'
 import { isJobs } from './atoms'
 import useFirebase from '../customHooks/use-firebase'
+import { ImportExportSection } from './components/sections/ImportExport'
 
 function App() {
   const [route, setRoute] = useState('')
@@ -36,13 +37,19 @@ function App() {
           <RouteSection setRoute={setRoute} />
         </>
       )}
+      {route == 'importExport' && (
+        <div>
+          <ImportExportSection />
+        </div>
+      )}
 
-      {route == 'home' ? (
+      {route == 'home' && (
         <div className="py-4 flex flex-col gap-y-4">
           <MainSection />
         </div>
-      ) : (
-        <div>
+      )}
+      {route == 'profile' && (
+        <div className="py-4 flex flex-col gap-y-4">
           <ProfileSection />
         </div>
       )}
