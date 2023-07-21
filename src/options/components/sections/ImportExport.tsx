@@ -44,13 +44,13 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
         // Process the JSON data
         console.log({ jsonData })
         if (jsonData.length > 0) {
-          for (const i of jsonData) {
+          for (const i of jsonData[1]) {
             if (type == 'keywords') {
               await setLocalKeywords(i?.keyword, i?.rssLink)
               await setLocalJobs(i?.keyword, i?.rssLink)
             }
             if (type == 'proposals') {
-              await setProposal(i)
+              await setProposal([i])
             }
           }
         }
