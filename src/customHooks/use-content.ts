@@ -1,5 +1,5 @@
 export const useContent = () => {
-  const setProposal = async (proposal: any, name: any) => {
+  const setProposal = async (proposal: any, name?: any) => {
     return new Promise<boolean>((resolve) => {
       let newProposals: any
       chrome.storage.local.get(['proposals'], (res) => {
@@ -20,8 +20,9 @@ export const useContent = () => {
             index = allProposals?.findIndex((obj: any) => obj.profile == proposal[0].profile)
             proposal = {
               ...proposal[0],
-              tone: proposal[0].tone === 'select' ? undefined: proposal[0].tone,
-              range_of_words: proposal[0].tone === 'default' ? undefined: proposal[0].range_of_words,
+              tone: proposal[0].tone === 'select' ? undefined : proposal[0].tone,
+              range_of_words:
+                proposal[0].tone === 'default' ? undefined : proposal[0].range_of_words,
             }
             newProposals = [...res?.proposals, proposal]
           } else newProposals = proposal

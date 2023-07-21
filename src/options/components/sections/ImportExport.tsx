@@ -1,11 +1,17 @@
+import { useRecoilState } from 'recoil'
+import { useContent } from '../../../customHooks/use-content'
 import useOpJobs from '../../../customHooks/use-option-jobs'
+import { proposals } from '../../atoms'
 
 export const ImportExportSection: React.FC<{}> = ({}) => {
+  const [allProposals, setAllProposals] = useRecoilState(proposals)
   const { setLocalJobs, setLocalKeywords } = useOpJobs()
+  const { setProposal, getProposals } = useContent()
 
-  function exportToJson() {
-    chrome.storage.local.get(['keywords']).then((res) => {
-      const jsonString = JSON.stringify(res.keywords, null, 2)
+  function exportToJson(type: string) {
+    chrome.storage.local.get(['keywords', 'proposals']).then((res) => {
+      const result = Object.entries(res).find((item) => item?.[0] === type)
+      const jsonString = JSON.stringify(result, null, 2)
 
       const blob = new Blob([jsonString], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
@@ -13,7 +19,7 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
       const a = document.getElementById('export') as HTMLAnchorElement
       if (a) {
         a.href = url
-        a.download = 'data.json'
+        a.download = `${type}.json`
         document.body.appendChild(a)
         a.click()
       }
@@ -23,10 +29,15 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
     })
   }
 
-  function importFromJson() {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement
-    if (fileInput?.files?.length && fileInput?.files?.length > 0) {
-      const file = fileInput.files[0]
+  function importFromJson(type: string) {
+    const InputElem = (
+      type == 'keywords'
+        ? document.getElementById('keywordInput')
+        : document.getElementById('proposalInput')
+    ) as HTMLInputElement
+    console.log(type, InputElem.files)
+    if (InputElem?.files?.length && InputElem?.files?.length > 0) {
+      const file = InputElem.files[0]
       const reader = new FileReader()
       reader.onload = async function (event: any) {
         const jsonData = JSON.parse(event.target.result)
@@ -34,9 +45,13 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
         console.log({ jsonData })
         if (jsonData.length > 0) {
           for (const i of jsonData) {
-            console.log(jsonData[i], i)
-            await setLocalKeywords(i?.keyword, i?.rssLink)
-            await setLocalJobs(i?.keyword, i?.rssLink)
+            if (type == 'keywords') {
+              await setLocalKeywords(i?.keyword, i?.rssLink)
+              await setLocalJobs(i?.keyword, i?.rssLink)
+            }
+            if (type == 'proposals') {
+              await setProposal(i)
+            }
           }
         }
       }
@@ -52,8 +67,8 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
             <span className="font-bold">Import</span>
             <input
               type="file"
-              id="fileInput"
-              onChange={importFromJson}
+              id="keywordInput"
+              onChange={() => importFromJson('keywords')}
               className="block w-full text-sm text-slate-500
         file:mr-4 file:py-2 file:px-4 file:rounded-md
         file:border-0 file:text-sm file:font-semibold
@@ -62,7 +77,7 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
             />
           </button>
           <button
-            onClick={exportToJson}
+            onClick={() => exportToJson('keywords')}
             className="font-bold rounded-md border border-green-400 px-6 py-2"
           >
             <a id="export"></a>Export Keywords
@@ -72,11 +87,12 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
       <div className="flex flex-col text-xl py-4">
         <h2 className="text-2xl font-bold py-4">Profiles</h2>
         <div className="flex">
-          <button onClick={importFromJson} className="flex gap-x-3">
+          <button className="flex gap-x-3">
             <span className="font-bold">Import</span>
             <input
               type="file"
-              id="fileInput"
+              onChange={() => importFromJson('proposals')}
+              id="proposalInput"
               className="block w-full text-sm text-slate-500
         file:mr-4 file:py-2 file:px-4 file:rounded-md
         file:border-0 file:text-sm file:font-semibold
@@ -85,7 +101,7 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
             />
           </button>
           <button
-            onClick={exportToJson}
+            onClick={() => exportToJson('proposals')}
             className="font-bold rounded-md border border-green-400 px-6 py-2"
           >
             <a id="export"></a>Export Profiles
