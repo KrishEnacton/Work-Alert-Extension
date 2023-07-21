@@ -35,14 +35,12 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
         ? document.getElementById('keywordInput')
         : document.getElementById('proposalInput')
     ) as HTMLInputElement
-    console.log(type, InputElem.files)
     if (InputElem?.files?.length && InputElem?.files?.length > 0) {
       const file = InputElem.files[0]
       const reader = new FileReader()
       reader.onload = async function (event: any) {
         const jsonData = JSON.parse(event.target.result)
         // Process the JSON data
-        console.log({ jsonData })
         if (jsonData.length > 0) {
           for (const i of jsonData[1]) {
             if (type == 'keywords') {
