@@ -83,12 +83,23 @@ const useGPT = () => {
       chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
         let tabId: any = tabs[0]?.id
         stream.onmessage = (event: any) => {
-          if (event.data.trim() != 'data: [DONE]') {
-            chrome.tabs.sendMessage(tabId, {
-              type: 'generated_ans',
-              data: event.data,
-              isClosed: true,
-            })
+          if (event.data.trim().slice(-12) != 'data: [DONE]') {
+            if (
+              event.data.lastIndexOf('data: {"message"') <
+                event.data.lastIndexOf('"error": null') &&
+              event.data.lastIndexOf('data: {"message"') >= 0
+            ) {
+              let value = event.data.slice(
+                event.data.lastIndexOf('data: {"message"'),
+                event.data.lastIndexOf('"error": null'),
+              )
+              const data: any = JSON.parse(value.slice(6, value.length - 2) + '}')
+              chrome.tabs.sendMessage(tabId, {
+                type: 'generated_ans',
+                data: data?.message?.content?.parts[0].toString(),
+                isClosed: true,
+              })
+            }
           } else {
             chrome.tabs.sendMessage(tabId, {
               type: 'generated_ans',
