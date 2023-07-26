@@ -89,7 +89,7 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
                     <div className="text-green-500 w-[170px] hover:text-green-600">
                       {selectedImg && selectedImg[elem.key as keyof typeof selectedImg]?.name
                         ? selectedImg[elem.key as keyof typeof selectedImg]?.name
-                        : 'Upload a file'}
+                        : `Upload ${elem.key} file`}
                     </div>
 
                     <input
@@ -100,6 +100,7 @@ export const ImportExportSection: React.FC<{}> = ({}) => {
                       }}
                       name={elem.inputId}
                       type="file"
+                      accept="application/json"
                       className="sr-only"
                     />
                   </label>
