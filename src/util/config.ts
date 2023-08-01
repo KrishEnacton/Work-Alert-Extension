@@ -28,9 +28,10 @@ Act as a Indian freelancer on upwork interacting with #{client_name}
 
 You need to reply the client by reading the chat and understanding the full context in Indian English
 
-"""#{formattedString}"""
+---
+#{formattedString}---
 
-#{message}
+IMPORTANT NOTE: #{message}
 
 Keep the reply to the point, smaller sentences, and chat type of phrases.
 `,
