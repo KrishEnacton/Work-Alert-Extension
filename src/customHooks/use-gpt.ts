@@ -31,12 +31,13 @@ const useGPT = () => {
   }
 
   const generateAns = async (queryParams: string[]) => {
-    if (accessToken) {
+    const { success, data } = (await getSession()) as any
+    if (success) {
       stream = new StreamClient(config.gpt_conversation_api, {
         headers: {
           accept: '*/*',
           'accept-language': 'en-US,en;q=0.9',
-          authorization: `Bearer ${accessToken}`,
+          authorization: `Bearer ${data.accessToken}`,
           'content-type': 'application/json',
         },
         body: JSON.stringify({
