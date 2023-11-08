@@ -37,7 +37,7 @@ const WorkCards: React.FC = () => {
     if (jobs && jobs.length > 0) {
       handleSortJobs()
       async function getfilters() {
-        await getFilter()
+        const filter = await getFilter()
       }
       getfilters()
     }

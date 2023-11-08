@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import HeaderSection from './components/sections/HeaderSection'
-import HomeSection from './components/sections/HomeSection'
+import MainSection from './components/sections/MainSection'
 import ProfileSection from './components/sections/ProfileSection'
 import RouteSection from './components/sections/RouteSection'
 import { useRecoilState } from 'recoil'
 import { isJobs } from './atoms'
 import useFirebase from '../customHooks/use-firebase'
+import { ImportExportSection } from './components/sections/ImportExport'
 
 function App() {
   const [route, setRoute] = useState('')
@@ -36,13 +37,19 @@ function App() {
           <RouteSection setRoute={setRoute} />
         </>
       )}
-
-      {route == 'home' ? (
-        <div className="py-4 flex flex-col gap-y-4">
-          <HomeSection />
-        </div>
-      ) : (
+      {route == 'importExport' && (
         <div>
+          <ImportExportSection />
+        </div>
+      )}
+
+      {route == 'home' && (
+        <div className="py-4 flex flex-col gap-y-4">
+          <MainSection />
+        </div>
+      )}
+      {route == 'profile' && (
+        <div className="py-4 flex flex-col gap-y-4">
           <ProfileSection />
         </div>
       )}

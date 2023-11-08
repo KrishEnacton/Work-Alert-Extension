@@ -24,8 +24,15 @@ export default defineManifest({
   },
   content_scripts: [
     {
-      matches: ['<all_urls>'],
-      js: ['src/content/index.ts'],
+      matches: [
+        'http://www.upwork.com/ab/proposals/job/*/apply/',
+        'https://www.upwork.com/ab/proposals/job/*/apply/',
+      ],
+      js: ['src/content/injects/proposal-button.tsx', 'src/content/injects/slider.tsx'],
+    },
+    {
+      matches: ['https://www.upwork.com/nx/find-work/*'],
+      js: ['src/content/injects/toggle-button.tsx'],
     },
   ],
   web_accessible_resources: [

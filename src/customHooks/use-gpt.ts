@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import { QueryProps } from '../util/types'
 import { StreamClient } from '../util/SSE'
 import { config } from '../util/config'
 let accessToken: string = ''
@@ -16,15 +17,15 @@ const useGPT = () => {
         .then((data) => {
           if (data.accessToken) {
             chrome.storage.local.set({ gpt_access_token: data.accessToken })
-            resolve({ success: true, data })
+            resolve(true)
           } else {
             chrome.storage.local.set({ gpt_access_token: null })
-            resolve({ success: false, data })
+            resolve(false)
           }
         })
         .catch((err) => {
+          resolve(false)
           console.log(err)
-          resolve(err)
         })
     })
   }
@@ -76,7 +77,7 @@ const useGPT = () => {
       chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
         let tabId: any = tabs[0]?.id
         stream.onmessage = (event: any) => {
-          if (event.data.trim() != 'data: [DONE]') {
+          if (event.data.trim().slice(-12) != 'data: [DONE]') {
             if (
               event.data.lastIndexOf('data: {"message"') <
                 event.data.lastIndexOf('"error": null') &&
@@ -99,14 +100,15 @@ const useGPT = () => {
               isClosed: false,
             })
             stream.close()
-            genTitle()
           }
         }
-        stream._onStreamFailure = (err: any) => {
+        stream._onStreamClosed = () => {
+          genTitle()
+        }
+        stream.onerror = (err: any) => {
           chrome.tabs.sendMessage(tabId, {
             type: 'generated_ans',
             error: true,
-            errMsg: err,
           })
         }
       })
@@ -127,14 +129,14 @@ const useGPT = () => {
   }
 
   const deleteToken = async () => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       chrome.storage.local.remove('gpt_access_token').then(() => {
         resolve(true)
       })
     })
   }
   async function genTitle() {
-    await fetch(`${config.gpt_conversation_api}s?offset=0&limit=20&order=updated`, {
+    await fetch(`${config.gpt_conversation_api}s?offset=0&limit=20`, {
       headers: {
         accept: '*/*',
         'accept-language': 'en-US,en;q=0.9',
@@ -181,7 +183,6 @@ const useGPT = () => {
     //@ts-ignore
     stream.close()
   }
-
   return { getSession, generateAns, genTitle, closeAns, getToken, deleteToken }
 }
 

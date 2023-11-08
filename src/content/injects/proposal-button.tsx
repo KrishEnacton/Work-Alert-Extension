@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client'
-import ProprosalButton from '../components/proposal/ProposalButton'
+import ProprosalButton from '../components/ProposalButton'
 
 const config = { attributes: true, childList: true, subtree: true }
 

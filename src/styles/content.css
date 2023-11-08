@@ -1,0 +1,16 @@
+
+.btn {
+    border: 1px solid green;
+    padding: 4px 8px;
+}
+
+.enabled {
+    color: green
+}
+.disabled {
+    color: red
+}
+
+.btn-primary {
+    padding: 14px 20px;
+}

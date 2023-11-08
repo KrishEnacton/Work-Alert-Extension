@@ -19,6 +19,15 @@ export default function RouteSection({ setRoute }: any) {
         >
           Profile
         </button>
+        <div>/</div>
+        <button
+          onClick={() => {
+            setRoute('importExport')
+          }}
+          className="hover:text-green-500"
+        >
+          Import/Export
+        </button>
       </div>
     </div>
   )
