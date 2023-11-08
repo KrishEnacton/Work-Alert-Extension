@@ -14,18 +14,18 @@ const KeyWordsSection: React.FC = () => {
     getBgKeywords().then((res: any) => setKeywords(res))
 
     getLocalKeywordsCount().then((res: any) => {
-      setKeywordsCount(res)
+      if (res) setKeywordsCount(res)
     })
 
     chrome.runtime.onMessage.addListener((req) => {
       if (req.key === 'addKeyCount') {
         getLocalKeywordsCount().then((res: any) => {
-          setKeywordsCount(res)
+          if (res) setKeywordsCount(res)
         })
       }
       if (req.key === 'deleteKeyCount') {
         getLocalKeywordsCount().then((res: any) => {
-          setKeywordsCount(res)
+          if (res) setKeywordsCount(res)
         })
       }
     })
