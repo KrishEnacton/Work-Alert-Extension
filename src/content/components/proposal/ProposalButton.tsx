@@ -2,9 +2,11 @@ import React from 'react'
 
 const ProprosalButton: React.FC = () => {
   function toggleSlider() {
-    let shadowRoot = document.querySelector('#root-id')?.shadowRoot
+    let shadowRoot = document.querySelector('#proposal-slider')?.shadowRoot?.host
     //@ts-ignore
-    shadowRoot.querySelector('#render').style.display = 'block'
+    shadowRoot.style.display = 'flex'
+    //@ts-ignore
+    shadowRoot.style.zIndex = '99999999'
   }
 
   return (

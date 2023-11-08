@@ -77,21 +77,30 @@ const useGPT = () => {
         let tabId: any = tabs[0]?.id
         stream.onmessage = (event: any) => {
           if (event.data.trim() != 'data: [DONE]') {
-            chrome.tabs.sendMessage(tabId, {
-              type: 'generated_ans',
-              data: event.data,
-              isClosed: true,
-            })
+            if (
+              event.data.lastIndexOf('data: {"message"') <
+                event.data.lastIndexOf('"error": null') &&
+              event.data.lastIndexOf('data: {"message"') >= 0
+            ) {
+              let value = event.data.slice(
+                event.data.lastIndexOf('data: {"message"'),
+                event.data.lastIndexOf('"error": null'),
+              )
+              const data: any = JSON.parse(value.slice(6, value.length - 2) + '}')
+              chrome.tabs.sendMessage(tabId, {
+                type: 'generated_ans',
+                data: data?.message?.content?.parts[0].toString(),
+                isClosed: true,
+              })
+            }
           } else {
             chrome.tabs.sendMessage(tabId, {
               type: 'generated_ans',
               isClosed: false,
             })
             stream.close()
+            genTitle()
           }
-        }
-        stream._onStreamClosed = () => {
-          genTitle()
         }
         stream._onStreamFailure = (err: any) => {
           chrome.tabs.sendMessage(tabId, {
@@ -118,14 +127,14 @@ const useGPT = () => {
   }
 
   const deleteToken = async () => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       chrome.storage.local.remove('gpt_access_token').then(() => {
         resolve(true)
       })
     })
   }
   async function genTitle() {
-    await fetch(`${config.gpt_conversation_api}s?offset=0&limit=20`, {
+    await fetch(`${config.gpt_conversation_api}s?offset=0&limit=20&order=updated`, {
       headers: {
         accept: '*/*',
         'accept-language': 'en-US,en;q=0.9',
@@ -173,70 +182,7 @@ const useGPT = () => {
     stream.close()
   }
 
-  const _generateAns = async (queryParams: string[]) => {
-    if (accessToken) {
-      stream = new StreamClient(config.gpt_conversation_api, {
-        headers: {
-          accept: '*/*',
-          'accept-language': 'en-US,en;q=0.9',
-          authorization: `Bearer ${accessToken}`,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'next',
-          messages: [
-            {
-              content: {
-                content_type: 'text',
-                parts: queryParams,
-              },
-              id: message_id,
-              role: 'user',
-            },
-          ],
-          model: 'text-davinci-002-render-sha',
-          parent_message_id: uuidv4(),
-        }),
-        method: 'POST',
-        mode: 'no-cors',
-        credentials: 'include',
-      })
-
-      return stream
-
-      //@ts-ignore
-      // chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
-      //   let tabId: any = tabs[0]?.id
-      //   stream.onmessage = (event: any) => {
-      //     if (event.data.trim() != 'data: [DONE]') {
-      //       chrome.tabs.sendMessage(tabId, {
-      //         type: 'generated_ans',
-      //         data: event.data,
-      //         isClosed: true,
-      //       })
-      //     } else {
-      //       chrome.tabs.sendMessage(tabId, {
-      //         type: 'generated_ans',
-      //         isClosed: false,
-      //       })
-      //       stream.close()
-      //     }
-      //   }
-      //   stream._onStreamClosed = () => {
-      //     genTitle()
-      //   }
-      //   stream._onStreamFailure = (err: any) => {
-      //     chrome.tabs.sendMessage(tabId, {
-      //       type: 'generated_ans',
-      //       error: true,
-      //       errMsg: err,
-      //     })
-      //   }
-      // })
-    }
-  }
-
-  return { getSession, generateAns, genTitle, closeAns, getToken, deleteToken, _generateAns }
+  return { getSession, generateAns, genTitle, closeAns, getToken, deleteToken }
 }
 
 export default useGPT

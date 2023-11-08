@@ -163,23 +163,6 @@ export const separateCounts = (arr: any) => {
   return result
 }
 
-export function generateQueryParams(query: QueryProps) {
-  const result: string[] = [
-    `Name: ${query?.name}\nSkills: ${query?.skills}\nExperience: ${query.experience}\nInbuilt Proposal: ${query?.proposal}\nClient Name: ${query?.client}`,
-    `Client Job Description: ${query?.job_description}`,
-    `Extract pain points from client job description and write a cover letter using the Inbuilt Proposal ${
-      query.tone ? 'in a ' + query?.tone + ' tone' : ''
-    }${
-      query.range_of_words
-        ? ' and it should not exceed more than ' + query?.range_of_words.split('_')[1] + ' words'
-        : ''
-    }.`,
-    `${query?.optional_info ? ` Additional Instructions: ${query?.optional_info}` : ''}`,
-  ].filter(Boolean)
-
-  return result
-}
-
 export const getAllChat = () => {
   const allChat = document.querySelectorAll('.room-body [id^=story]')
   const msgArray = [] as any
@@ -208,24 +191,32 @@ export const getGptAnsFromBG = ({
 }: {
   type: string
   from: string
-  query: any
+  query?: any
   callback: (ans: string) => void
 }) => {
-  chrome.runtime.sendMessage({
-    type,
-    from,
-    query,
-  })
+  if (query) {
+    chrome.runtime.sendMessage({
+      type,
+      from,
+      query,
+    })
+  }
+  getGPTAnswer(callback)
+}
+
+export function getGPTAnswer(callback: (ans: string) => void) {
   chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
     if (request.type === 'generated_ans') {
-      let result = request.data.slice(request.data.indexOf('parts'), request.data.indexOf('status'))
-      result = result?.slice(10, result.length - 6)
-      callback(result)
+      let result = ''
+      if (request?.data) {
+        result = request.data
+      }
+      callback(result ?? '')
     }
   })
 }
 
-export const toggleSlider = ({ id = 'work-alert-slider' }: { id?: string | undefined }) => {
+export const toggleSlider = (id?: string) => {
   let slider = document.querySelector('#' + id) as HTMLElement
   if (slider) {
     if (slider.style.display === 'flex') {
@@ -243,9 +234,9 @@ export const toggleSlider = ({ id = 'work-alert-slider' }: { id?: string | undef
   linkElement.type = 'text/css'
   linkElement.href = chrome.runtime.getURL('/src/styles/output.css')
   let rootElement = document.createElement('div')
-  rootElement.id = id
+  if (id) rootElement.id = id
   rootElement.style.zIndex = '9999999'
-  rootElement.style.display = 'flex'
+  rootElement.style.display = 'none'
   rootElement.style.position = 'relative'
   document.body.prepend(rootElement)
   const shadowDOM = rootElement.attachShadow({ mode: 'open' })

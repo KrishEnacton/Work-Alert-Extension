@@ -3,7 +3,7 @@ import { getAllChat, getGptAnsFromBG } from '../../util'
 import unescape from 'unescape-js'
 import { config } from '../../util/config'
 
-const UpworkClientMsg = () => {
+const ClientMessage = () => {
   const [generatedANS, setGeneratedANS] = useState('')
   const clientNameInputRef = useRef<HTMLInputElement>(null)
 
@@ -13,7 +13,7 @@ const UpworkClientMsg = () => {
     const { message, client_name } = Object.fromEntries(formData.entries())
     const { formattedString, client } = getAllChat()
     getGptAnsFromBG({
-      from: 'UpworkClientMsg.tsx',
+      from: 'ClientMessage.tsx',
       query: [
         config.upwork_msg_ans_macro
           .replace('#{client_name}', (client_name || client) as string)
@@ -112,4 +112,4 @@ const UpworkClientMsg = () => {
   )
 }
 
-export default UpworkClientMsg
+export default ClientMessage
