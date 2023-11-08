@@ -68,12 +68,16 @@ export const config: configProps = {
   ],
   upwork_msg_url: 'https://www.upwork.com/ab/messages/rooms',
   upwork_msg_ans_macro: `
-I have been working with #{client_name} on upwork project
-Below is the my recent upwork conversation with #{client_name}
+Act as a Indian freelancer on upwork interacting with #{client_name}
 
-"""#{formattedString}"""
+You need to reply the client by reading the chat and understanding the full context in Indian English
 
-#{message}
+---
+#{formattedString}---
+
+IMPORTANT NOTE: #{message}
+
+Keep the reply to the point, smaller sentences, and chat type of phrases.
 `,
 }
 

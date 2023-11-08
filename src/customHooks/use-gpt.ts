@@ -30,28 +30,42 @@ const useGPT = () => {
   }
 
   const generateAns = async (queryParams: string[]) => {
-    if (accessToken) {
+    const { success, data } = (await getSession()) as any
+    if (success) {
       stream = new StreamClient(config.gpt_conversation_api, {
         headers: {
           accept: '*/*',
-          'accept-language': 'en-US,en;q=0.9',
-          authorization: `Bearer ${accessToken}`,
+          'accept-language': 'en-US',
+          authorization: `Bearer ${data.accessToken}`,
           'content-type': 'application/json',
+          'cache-control': 'no-cache',
         },
         body: JSON.stringify({
           action: 'next',
           messages: [
             {
+              id: message_id,
+              author: {
+                role: 'user',
+              },
               content: {
                 content_type: 'text',
                 parts: queryParams,
               },
-              id: message_id,
-              role: 'user',
+              metadata: {},
             },
           ],
-          model: 'text-davinci-002-render-sha',
           parent_message_id: uuidv4(),
+          model: 'text-davinci-002-render-sha',
+          timezone_offset_min: -330,
+          suggestions: [],
+          history_and_training_disabled: false,
+          arkose_token: null,
+          conversation_mode: {
+            kind: 'primary_assistant',
+          },
+          force_paragen: false,
+          force_rate_limit: false,
         }),
         method: 'POST',
         mode: 'no-cors',
@@ -99,12 +113,14 @@ const useGPT = () => {
     }
   }
   const getToken = async () => {
-    return new Promise((resolve, reject) => {
-      chrome.storage.local.get('gpt_access_token', (res) => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError)
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage({ type: 'session_call' }, (res: any) => {
+        if (res && res.data.accessToken) {
+          chrome.storage.local.set({ gpt_access_token: res.data.accessToken })
+          resolve({ gpt_access_token: res.data.accessToken })
         } else {
-          resolve(res)
+          chrome.storage.local.set({ gpt_access_token: null })
+          resolve({})
         }
       })
     })

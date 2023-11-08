@@ -5,7 +5,7 @@ export default defineManifest({
   name: 'Work Alert Extension',
   description:
     "Work Alert makes finding Upwork jobs easier. Don't spend hours searching, get notifications when jobs are posted.",
-  version: '0.1.0',
+  version: '0.1.1',
   manifest_version: 3,
   icons: {
     '16': 'img/enacton.png',
@@ -30,7 +30,7 @@ export default defineManifest({
   ],
   web_accessible_resources: [
     {
-      resources: ['src/styles/output.css'],
+      resources: ['src/styles/output.css', 'img/enacton.png'],
       matches: ['https://www.upwork.com/*'],
       use_dynamic_url: true,
     },
@@ -45,7 +45,7 @@ export default defineManifest({
     'contextMenus',
     'system.display',
   ],
-  host_permissions: ['https://*.upwork.com/*', 'https://*.openai.com/'],
+  host_permissions: ['<all_urls>'],
   oauth2: {
     scopes: ['openid', 'email', 'profile'],
     client_id: config.OAuth2Token,

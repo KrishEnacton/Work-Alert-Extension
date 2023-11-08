@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { getAllChat, getGptAnsFromBG } from '../../util'
 import unescape from 'unescape-js'
 import { config } from '../../util/config'
 
 const ClientMessage = () => {
   const [generatedANS, setGeneratedANS] = useState('')
+  const clientNameInputRef = useRef<HTMLInputElement>(null)
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -26,6 +27,18 @@ const ClientMessage = () => {
     })
   }
 
+  useEffect(() => {
+    const targetNode = document.querySelector('#work-alert-slider') as HTMLElement
+    const config = { attributes: true }
+    const observer = new MutationObserver(() => {
+      if (clientNameInputRef.current) clientNameInputRef.current.value = getAllChat().client
+    })
+    observer.observe(targetNode, config)
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
   return (
     <div className="flex justify-center mt-5 flex-col items-center">
       <form className="w-full max-w-sm" onSubmit={onSubmit}>
@@ -40,8 +53,10 @@ const ClientMessage = () => {
           </div>
           <div className="md:w-2/3">
             <input
+              ref={clientNameInputRef}
               className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
               id="client_name"
+              name="client_name"
               type="text"
               defaultValue={getAllChat().client}
             />
@@ -57,10 +72,11 @@ const ClientMessage = () => {
             </label>
           </div>
           <div className="md:w-2/3">
-            <input
+            <textarea
               className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
               id="message"
-              type="text"
+              name="message"
+              rows={3}
             />
           </div>
         </div>
