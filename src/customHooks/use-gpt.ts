@@ -166,9 +166,10 @@ const useGPT = () => {
   }
 
   async function deleteTitle(messageId: string) {
-    fetch(`${config.gpt_conversation_api}/${messageId}`, {
+    await fetch(`${config.gpt_conversation_api}/${messageId}`, {
       headers: {
         accept: '*/*',
+        'accept-language': 'en-US',
         authorization: `Bearer ${accessToken}`,
         'content-type': 'application/json',
       },
@@ -182,6 +183,9 @@ const useGPT = () => {
   function closeAns() {
     //@ts-ignore
     stream.close()
+    setTimeout(() => {
+      genTitle()
+    }, 500)
   }
   return { getSession, generateAns, genTitle, closeAns, getToken, deleteToken }
 }

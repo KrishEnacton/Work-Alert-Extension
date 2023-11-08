@@ -5,7 +5,7 @@ export default defineManifest({
   name: 'Work Alert Extension',
   description:
     "Work Alert makes finding Upwork jobs easier. Don't spend hours searching, get notifications when jobs are posted.",
-  version: '0.1.1',
+  version: '0.1.2',
   manifest_version: 3,
   icons: {
     '16': 'img/enacton.png',
