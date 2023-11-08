@@ -1,10 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
-import { CrossIcon, RefreshIcon, SpinnerLoader } from '../../util/Icons'
-import { useContent } from '../../customHooks/use-content'
-import { QueryProps, proposalsProps } from '../../util/types'
-import useGPT from '../../customHooks/use-gpt'
 import unescape from 'unescape-js'
-import ReactMarkdown from 'react-markdown'
+import { useContent } from '../../customHooks/use-content'
+import useGPT from '../../customHooks/use-gpt'
+import { CrossIcon, RefreshIcon, SpinnerLoader } from '../../util/Icons'
+import { QueryProps, proposalsProps } from '../../util/types'
 
 const Slider: React.FC = () => {
   const { getToken, deleteToken } = useGPT()
@@ -19,7 +18,7 @@ const Slider: React.FC = () => {
     proposal: '',
     name: '',
     experience: '0',
-    skills: "",
+    skills: '',
     portfolio: '',
     client: '',
     tone: '',
@@ -47,9 +46,9 @@ const Slider: React.FC = () => {
     })
   }
   function closeSlider() {
-    let shadowRoot = document.querySelector("#root-id")?.shadowRoot
+    let shadowRoot = document.querySelector('#root-id')?.shadowRoot
     //@ts-ignore
-    shadowRoot.querySelector("#render").style.display = "none"
+    shadowRoot.querySelector('#render').style.display = 'none'
   }
 
   const sendQueryToGPT = async () => {
@@ -76,9 +75,11 @@ const Slider: React.FC = () => {
 
   const fillProposal = (proposal: string | undefined) => {
     const textarea = document.querySelector('.up-textarea') as HTMLTextAreaElement
-    if (proposal) textarea.value = `${proposal}\n ${proposals?.find(
-      (proposal: proposalsProps) => proposal.profile === selectedProfile,
-    )?.portfolio}`
+    if (proposal)
+      textarea.value = `${proposal}\n ${
+        proposals?.find((proposal: proposalsProps) => proposal.profile === selectedProfile)
+          ?.portfolio
+      }`
     const event = new Event('input', { bubbles: true })
     textarea.dispatchEvent(event)
   }

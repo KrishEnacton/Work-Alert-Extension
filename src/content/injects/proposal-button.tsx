@@ -1,8 +1,13 @@
 import ReactDOM from 'react-dom/client'
 import ProprosalButton from '../components/ProposalButton'
 
-window.onload = () => {
-  // Attaching ProposalButton component to shadowDOM
+const config = { attributes: true, childList: true, subtree: true }
+
+const callback = () => {
+  if (document.querySelector('#injected-button')) {
+    observer.disconnect()
+    return true
+  }
   let div = document.createElement('div') as HTMLElement
   div.id = 'injected-button'
   div.style.position = 'relative'
@@ -19,3 +24,9 @@ window.onload = () => {
   ReactDOM.createRoot(renderElem).render(<ProprosalButton />)
   shadow.appendChild(renderElem)
 }
+
+// Create an observer instance linked to the callback function
+const observer = new MutationObserver(callback)
+
+// Start observing the target node for configured mutations
+observer.observe(document.body, config)

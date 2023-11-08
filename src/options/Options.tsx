@@ -29,7 +29,7 @@ function App() {
 
   return (
     <div className="bg-black text-white min-h-screen">
-      <button onClick={loginWithGoogle}>Login with google</button>
+      {/* <button onClick={loginWithGoogle}>Login with google</button> */}
       {!isClick && (
         <>
           <HeaderSection />
